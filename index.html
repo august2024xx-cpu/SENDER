@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIZZA COIN CRYPTO - MBDA MEGA BONUS DEPOSIT ALGORITHM (Standard Sequential ERC20)</title>
+    <!-- Chart.js for Gas Comparison Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --neon-green: #00ff66;
+            --neon-green-glow: rgba(0, 255, 102, 0.4);
+            --dark-bg: #080c0a;
+            --card-bg: #101813;
+            --border-color: #1b2e21;
+            --text-main: #e0ffe8;
+            --text-muted: #6b8c73;
+            --danger-red: #ff3366;
+            --warning-orange: #ffaa00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Neon Glow Effects */
+        .neon-text {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
+        }
+
+        .neon-border {
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green-glow);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--neon-green);
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .network-badge {
+            background: rgba(0, 255, 102, 0.1);
+            border: 1px solid var(--neon-green);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            color: var(--neon-green);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        input[type="text"], input[type="datetime-local"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #0a120c;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--neon-green);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green-glow);
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+            white-space: pre;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric-box {
+            background: #0a120c;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-green-glow);
+        }
+
+        /* Execution Progress */
+        .progress-bar-container {
+            width: 100%;
+            background: #0a120c;
+            border: 1px solid var(--border-color);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+            transition: width 0.3s ease;
+        }
+
+        /* Recipient List with Status */
+        .address-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            background: #0a120c;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .address-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #142419;
+        }
+
+        .address-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .status-pending { color: var(--warning-orange); border: 1px solid var(--warning-orange); }
+        .status-success { color: var(--neon-green); border: 1px solid var(--neon-green); }
+
+        /* Chart Canvas Container */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Tx Log Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--neon-green);
+            background: #0a120c;
+        }
+
+        .tx-hash {
+            color: var(--neon-green);
+            text-decoration: none;
+            font-family: monospace;
+        }
+
+        .tx-hash:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Network Header -->
+    <header class="neon-border">
+        <div class="header-title">
+            <h1 class="neon-text"><i class="fa-solid fa-pizza-slice"></i> PIZZA COIN CRYPTO</h1>
+            <p>MBDA MEGA BONUS DEPOSIT ALGORITHM — Regular ERC20 Sequential Loop</p>
+        </div>
+        <div class="network-badge">
+            <span class="status-dot"></span>
+            <span>1 POLYGON NETWORK</span>
+        </div>
+    </header>
+
+    <div class="grid-layout">
+        
+        <!-- Left Column: Inputs & Configuration -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-sliders"></i> <span>TRANSFER CONFIGURATION</span>
+            </div>
+
+            <div class="form-group">
+                <label for="senderAddress">3 Enter Sender's Wallet Address</label>
+                <input type="text" id="senderAddress" placeholder="0x..." value="0x71C7656EC7ab88b098defB751B7401B5f6d8976F">
+            </div>
+
+            <div class="form-group">
+                <label for="tokenAddress">4 Enter 0x.... Of Crypto (ERC20 Token) Being Sent</label>
+                <input type="text" id="tokenAddress" placeholder="0x..." value="0x3BA4D9aB602c1d9b32e1F29C35F21e7d2F7e9A1C">
+            </div>
+
+            <div class="form-group">
+                <label for="addressList">2 Enter 0x...... Addresses in Text Format (One per line)</label>
+                <textarea id="addressList" placeholder="0x123...&#10;0x456...&#10;0x789..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="scheduleTime">7 Schedule Future Time Next Auto Send</label>
+                <input type="datetime-local" id="scheduleTime">
+            </div>
+
+            <button class="btn" onclick="startSequentialSend()"><i class="fa-solid fa-bolt"></i> Execute Sequential Deposit</button>
+        </div>
+
+        <!-- Right Column: Metrics & Gas Chart -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-gas-pump"></i> <span>GAS METRICS & COST COMPARISON</span>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-title">5 ESTIMATED GAS (TOTAL LOOP)</div>
+                    <div class="metric-value" id="estGas">0.00 MATIC</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">6 ACTUAL GAS SPENT</div>
+                    <div class="metric-value" id="actualGas">0.00 MATIC</div>
+                </div>
+            </div>
+
+            <label>Gas Fee Comparison: Regular ERC20 Loop vs Batch Contract</label>
+            <div class="chart-container">
+                <canvas id="gasChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Execution Status & Recipient Checkmarks -->
+    <div class="card" style="margin-bottom: 25px;">
+        <div class="card-header">
+            <i class="fa-solid fa-list-check"></i> <span>8 CHECKMARK SUCCESS SENT & EXECUTION QUEUE</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="address-list" id="recipientStatusList">
+            <div style="color: var(--text-muted); text-align: center; font-size: 0.85rem;">No target addresses entered yet.</div>
+        </div>
+    </div>
+
+    <!-- Transaction Hash History Table -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fa-solid fa-receipt"></i> <span>9 PRODUCE TRANSACTION HASH LOG</span>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Recipient Address</th>
+                        <th>Status</th>
+                        <th>Transaction Hash</th>
+                        <th>Gas Used</th>
+                    </tr>
+                </thead>
+                <tbody id="txTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No transactions executed yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Default addresses initialization
+        const defaultAddresses = [
+            "0x8ba1f109551bD432803012645Ac136ddd64DBA72",
+            "0xAB7c8803962c0f2F5BBBe3FA8bf41cd82AA1923C",
+            "0xFe3B557E8fb62b89F4916B721be55cEb828dBd73",
+            "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db"
+        ];
+        document.getElementById('addressList').value = defaultAddresses.join('\n');
+
+        // Set default schedule time to current time
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('scheduleTime').value = now.toISOString().slice(0, 16);
+
+        // Chart Initialization
+        let gasChart;
+        function initChart() {
+            const ctx = document.getElementById('gasChart').getContext('2d');
+            gasChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1 Address', '5 Addresses', '10 Addresses', '50 Addresses'],
+                    datasets: [
+                        {
+                            label: 'Regular ERC20 Sequential Loop (Higher Overhead)',
+                            data: [65000, 325000, 650000, 3250000],
+                            backgroundColor: 'rgba(255, 51, 102, 0.6)',
+                            borderColor: '#ff3366',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Batch Multi-Call Contract (Gas Optimized)',
+                            data: [65000, 180000, 320000, 1400000],
+                            backgroundColor: 'rgba(0, 255, 102, 0.6)',
+                            borderColor: '#00ff66',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Gas Units Spent', color: '#6b8c73' },
+                            ticks: { color: '#6b8c73' },
+                            grid: { color: '#1b2e21' }
+                        },
+                        x: {
+                            ticks: { color: '#6b8c73' },
+                            grid: { color: '#1b2e21' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#e0ffe8' } }
+                    }
+                }
+            });
+        }
+        initChart();
+
+        // Calculate and Render Addresses
+        function getAddressArray() {
+            const raw = document.getElementById('addressList').value;
+            return raw.split('\n').map(a => a.trim()).filter(a => a.startsWith('0x') && a.length === 42);
+        }
+
+        function updateEstimatedGas() {
+            const addrs = getAddressArray();
+            const estGasPerTx = 65000; // Average gas for regular ERC20 transfer
+            const gasPriceGwei = 30; // 30 Gwei on Polygon
+            const totalGasUnits = addrs.length * estGasPerTx;
+            const totalMatic = (totalGasUnits * gasPriceGwei) / 1e9;
+            
+            document.getElementById('estGas').innerText = totalMatic.toFixed(5) + " MATIC";
+            renderRecipientQueue(addrs);
+        }
+
+        function renderRecipientQueue(addrs) {
+            const container = document.getElementById('recipientStatusList');
+            if (addrs.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-muted); text-align: center; font-size: 0.85rem;">No valid 0x... addresses entered.</div>`;
+                return;
+            }
+
+            container.innerHTML = addrs.map((addr, idx) => `
+                <div class="address-item" id="item-${idx}">
+                    <span>${idx + 1}. ${addr}</span>
+                    <span class="status-badge status-pending" id="status-${idx}">QUEUED</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('addressList').addEventListener('input', updateEstimatedGas);
+        updateEstimatedGas();
+
+        // Helper to generate mock hash
+        function generateTxHash() {
+            const chars = '0123456789abcdef';
+            let hash = '0x';
+            for (let i = 0; i < 64; i++) {
+                hash += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return hash;
+        }
+
+        // Execution Simulation
+        async function startSequentialSend() {
+            const addrs = getAddressArray();
+            if (addrs.length === 0) {
+                alert("Please enter valid 0x... addresses in text format.");
+                return;
+            }
+
+            const tableBody = document.getElementById('txTableBody');
+            tableBody.innerHTML = '';
+            document.getElementById('actualGas').innerText = "0.00 MATIC";
+            let accumulatedGasSpent = 0;
+
+            for (let i = 0; i < addrs.length; i++) {
+                // Update UI Progress
+                const progressPct = ((i + 1) / addrs.length) * 100;
+                document.getElementById('progressBar').style.width = progressPct + '%';
+
+                // Simulate Network Delay for regular sequential execution
+                await new Promise(r => setTimeout(r, 800));
+
+                // Mark Item Checkmark Success
+                const statusBadge = document.getElementById(`status-${i}`);
+                if (statusBadge) {
+                    statusBadge.className = 'status-badge status-success';
+                    statusBadge.innerHTML = '<i class="fa-solid fa-check"></i> SENT';
+                }
+
+                // Calculate Random Gas Spent per Standard Tx
+                const gasSpentTx = 0.00195 + (Math.random() * 0.0003);
+                accumulatedGasSpent += gasSpentTx;
+                document.getElementById('actualGas').innerText = accumulatedGasSpent.toFixed(5) + " MATIC";
+
+                // Generate and Append Tx Hash Log
+                const txHash = generateTxHash();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${addrs[i]}</td>
+                    <td style="color: var(--neon-green);"><i class="fa-solid fa-circle-check"></i> Success</td>
+                    <td><a href="https://polygonscan.com/tx/${txHash}" target="_blank" class="tx-hash">${txHash.substring(0,10)}...${txHash.substring(58)}</a></td>
+                    <td>${gasSpentTx.toFixed(5)} MATIC</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+    </script>
+</body>
+</html>
